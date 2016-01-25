@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<style>
+body{
+	background:black;
+}
+#container {
+  padding-right: 100px;
+  padding-left: 100px;
+  width: auto;
+  height: 600px;
+  position: relative;
+  background: black;
+}
+#animate {
+  width: 400px;
+  height: 300px;
+  position: absolute;
+  background: black;
+}
+#img {
+  width: 100%;
+  height: auto;
+}
+
+
+</style>
+<body>
+
+<p>
+<button onclick="myMove()">Click Me</button>
+</p> 
+<div id ="bigcont">
+<div id ="container">
+<div id ="animate">
+<div id ="imgContainer">
+	<img id = "img" src="3dimages/ice.jpg" />
+	
+</div>
+</div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script>
+//global vars
+
+function myMove() {
+var parentWidth = $("#container").outerWidth();
+var imgWidth = $("#imgContainer").width();
+var widthToMoveImage = 2*(parentWidth - imgWidth);
+//alert(widthToMoveImage);
+  var elem = document.getElementById("animate");   
+  var pos = (parentWidth - $('#container').width())/2;
+  var counter = 0;
+  var mod = widthToMoveImage;
+  var id = setInterval(frame, 10);
+  function frame() {
+     parentWidth = $("#container").width();
+	 imgWidth = $("#imgContainer").width();
+	 widthToMoveImage = 2*(parentWidth - imgWidth);
+	 mod = widthToMoveImage;
+	  if ( counter % mod < mod/2)
+		pos++; 
+	  else
+		pos--;
+	  counter++;
+	  if (counter == mod)
+		counter = 0;
+      elem.style.left = pos + 'px'; 
+    
+  }
+}
+
+</script>
+
+</body>
+</html>
