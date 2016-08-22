@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<div>
+<button onclick="myMove()">Click Me</button>
+</div>
+<div>
+<button onclick="swap()">swap directions</button>
+</div>
+<div>
+<button onclick="colorIt()">Color ON/OFF</button>
+</div>
+<div>
+<canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+</div>
+<script>
+var colored = false;
+//the eCircle class takes in a factor for the size of the circle, the name of the canvas, and 
+//starting x and y locs for the cooridinates of the circles.
+var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
+	var c = document.getElementById(canvas);
+	this.x=startX;
+	this.y=startY;
+			this.ctx = c.getContext("2d");
+		this.ctx2=c.getContext("2d"); 
+		this.textCanvas=c.getContext("2d");
+		this.innerfakePointx=0;
+		this.innerfakePointy=0;
+		this.innerr=0;
+		this.innery=0;
+		this.innerx=0;
+    this.r=factor*70;
+	this.const = function (factor=3, xLoc) {
+		this.x=xLoc;
+		this.y=this.y;
+
+	}
+	this.innerCircle = function(sign) {
+	//for a circle, based on the sign passed in
+	//move the inner circle some distance away from the edge
+	//of the circle.  THe left or right edge based on the sign passed in.
+
+	//to move away from the right edge,
+	//take the actual X position (which is the upper right x portion of the vector)
+	//then add 2 * the radius of the outer circle to locate the X position for distance away.
+	//rightEdge = this.x + this.r*2;
+
+	//now to locate the x for the inner circle we start with the value that would have it touching the edge
+	//rightEdge - this.innerr*2 
+	//then subtract the width from that to move it away from the edge.
+	//rightEdge - this.innerr*2 - distanceFromEdge
+	//this subtract the inner radius one mroe time.
+	//for the leftEdge it is easier.  Just add the width to the innerr.
+
+	var distanceFromEdge=50;
+	this.innerr=this.r*(3/5);
+	//You need to account for the width of the line for hte circle (the - 10 here)
+	var rightEdge = this.x + this.innerr - 10;
+	var leftEdge = this.x + distanceFromEdge;
+	this.textMove = 0;
+	this.innery=this.y + (this.r - this.innerr);
+	if (sign == '+'){
+		this.innerx=rightEdge;
+		this.textMove = this.textMove*-1;
+	} else if (sign == '-') {
+		this.innerx=leftEdge;
+
+	}
+	this.setFakePoints();
+
+	}
+
+	this.setFakePoints = function() {
+		this.fakePointx = this.x + this.r;
+		this.fakePointy = this.y + this.r;
+		this.innerfakePointx = this.innerx + this.innerr;
+		this.innerfakePointy = this.innery + this.innerr;
+	}
+
+	this.draw = function(color="red") {
+		this.ctx2.strokeStyle="#000000";
+		this.ctx.lineWidth=20;
+		this.ctx.beginPath();
+		this.ctx.arc(this.fakePointx,this.fakePointy,this.r,0,2*Math.PI);
+		this.ctx.stroke();
+		this.ctx.closePath();
+
+		this.ctx2.lineWidth=20;
+		this.ctx2.beginPath();
+		this.ctx2.arc(this.innerfakePointx,this.innerfakePointy,this.innerr,0,2*Math.PI);
+		if (colored == true)
+		{
+		if (color == "red")
+		{
+			this.ctx2.strokeStyle="#FF0000"
+			this.ctx2.fillStyle = 'green';
+			this.ctx2.fill();
+		}
+		else{
+			this.ctx2.strokeStyle="#00FF00"
+			this.ctx2.fillStyle = 'orange';
+			this.ctx2.fill();
+		}
+		}
+		this.ctx2.stroke();
+		this.ctx2.closePath();
+		this.ctx2.fillStyle = 'black';
+		this.textCanvas.font = "30px Arial";
+		var fontSize = this.textCanvas.measureText("Hello World");
+		var fontx = (this.innerr*2 - fontSize.width)/2+this.innerx;
+		console.log(fontSize);
+		console.log("fontx:" +fontx);
+		console.log(this.innerx);
+		console.log("innerR: " + this.innerr);
+		this.textCanvas.fillText("Hello World",fontx+this.textMove,this.innery+5+this.innerr);
+		this.textCanvas.closePath();
+
+	}
+	this.clear = function() {
+		this.ctx.clearRect(0, 0, 1600, 500);
+	}
+		this.const(factor, startX, startY);
+}
+
+
+
+
+var shift = 200;
+var width = 600;
+var leftLoc = shift+10;
+var rightLoc = shift+width;
+var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+var 	shifter = 1;
+var 	dir = -1;
+
+
+var leftCircle = new ecircle(3, "myCanvas", rightLoc, 30);
+var rightCircle  = new ecircle(3, "myCanvas", leftLoc , 30);
+var leftSign = '+';
+var rightSign = '-';
+leftCircle.innerCircle(leftSign);
+
+rightCircle.innerCircle(rightSign);
+
+leftCircle.clear();
+leftCircle.draw();
+rightCircle.draw("green");
+
+
+function swap()
+{
+var swap;
+swap = leftSign;
+leftSign = rightSign;
+rightSign = swap;
+
+
+leftCircle.innerCircle(leftSign);
+rightCircle.innerCircle(rightSign);
+leftCircle.clear();
+leftCircle.draw();
+rightCircle.draw("green");
+}
+
+var colorIt = function() {
+	colored = !(colored);
+	
+	leftCircle.innerCircle(leftSign);
+	rightCircle.innerCircle(rightSign);
+	leftCircle.clear();
+	leftCircle.draw();
+	rightCircle.draw("green");
+}
+
+function myMove() {
+setTimeout(myMove, 200);
+
+	if (rightLoc-leftLoc < 550 && shifter > 0)
+		shifter = shifter * dir;
+	else if (rightLoc - leftLoc > 700 && shifter < 0)
+		shifter = shifter * dir;
+	
+	leftLoc = leftLoc + shifter;
+	rightLoc = rightLoc - shifter;
+	
+	leftCircle.const(3, leftLoc);
+	leftCircle.innerCircle(leftSign);
+	rightCircle.const(3, rightLoc);
+	rightCircle.innerCircle(rightSign);
+	leftCircle.draw();
+	rightCircle.draw("green");
+
+  }
+//myMove();
+
+
+</script>
+
+</body>
+</html>
