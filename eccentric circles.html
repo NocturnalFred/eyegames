@@ -2,14 +2,15 @@
 <html>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-<div>
-<button onclick="myMove()">Click Me</button>
-</div>
+
 <div>
 <button onclick="swap()">swap directions</button>
 </div>
 <div>
 <button onclick="colorIt()">Color ON/OFF</button>
+</div>
+<div>
+<button onclick="stopIt()">Start/Stop circles</button>
 </div>
 <div>
 <canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
@@ -18,6 +19,7 @@ Your browser does not support the HTML5 canvas tag.
 </div>
 <script>
 var colored = false;
+var stop = true;
 //the eCircle class takes in a factor for the size of the circle, the name of the canvas, and 
 //starting x and y locs for the cooridinates of the circles.
 var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
@@ -55,11 +57,11 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 	//this subtract the inner radius one mroe time.
 	//for the leftEdge it is easier.  Just add the width to the innerr.
 
-	var distanceFromEdge=50;
-	this.innerr=this.r*(3/5);
+	var distanceFromEdge=35;
+	this.innerr=this.r*(5/7);
 	//You need to account for the width of the line for hte circle (the - 10 here)
-	var rightEdge = this.x + this.innerr - 10;
-	var leftEdge = this.x + distanceFromEdge;
+	var rightEdge = this.x + distanceFromEdge;
+	var leftEdge = this.x + this.r*2 - this.innerr*2 - distanceFromEdge;
 	this.textMove = 0;
 	this.innery=this.y + (this.r - this.innerr);
 	if (sign == '+'){
@@ -81,6 +83,7 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 	}
 
 	this.draw = function(color="red") {
+	
 		this.ctx2.strokeStyle="#000000";
 		this.ctx.lineWidth=20;
 		this.ctx.beginPath();
@@ -95,12 +98,12 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 		{
 		if (color == "red")
 		{
-			this.ctx2.strokeStyle="#FF0000"
+			//this.ctx2.strokeStyle="orange"
 			this.ctx2.fillStyle = 'green';
 			this.ctx2.fill();
 		}
 		else{
-			this.ctx2.strokeStyle="#00FF00"
+			//this.ctx2.strokeStyle="green"
 			this.ctx2.fillStyle = 'orange';
 			this.ctx2.fill();
 		}
@@ -152,7 +155,10 @@ leftCircle.clear();
 leftCircle.draw();
 rightCircle.draw("green");
 
-
+function stopIt() 
+{
+	stop = !(stop);
+}
 function swap()
 {
 var swap;
@@ -164,6 +170,7 @@ rightSign = swap;
 leftCircle.innerCircle(leftSign);
 rightCircle.innerCircle(rightSign);
 leftCircle.clear();
+rightCircle.clear();
 leftCircle.draw();
 rightCircle.draw("green");
 }
@@ -174,13 +181,15 @@ var colorIt = function() {
 	leftCircle.innerCircle(leftSign);
 	rightCircle.innerCircle(rightSign);
 	leftCircle.clear();
+	rightCircle.clear();
 	leftCircle.draw();
 	rightCircle.draw("green");
 }
 
 function myMove() {
 setTimeout(myMove, 200);
-
+	if (stop != true)
+	{
 	if (rightLoc-leftLoc < 550 && shifter > 0)
 		shifter = shifter * dir;
 	else if (rightLoc - leftLoc > 700 && shifter < 0)
@@ -190,14 +199,16 @@ setTimeout(myMove, 200);
 	rightLoc = rightLoc - shifter;
 	
 	leftCircle.const(3, leftLoc);
-	leftCircle.innerCircle(leftSign);
+	leftCircle.innerCircle(rightSign);
 	rightCircle.const(3, rightLoc);
-	rightCircle.innerCircle(rightSign);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
 	leftCircle.draw();
 	rightCircle.draw("green");
-
+	}
   }
-//myMove();
+myMove();
 
 
 </script>
