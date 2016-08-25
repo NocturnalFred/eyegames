@@ -18,6 +18,24 @@
 <button onclick="stopIt()">Start/Stop circles</button>
 </div>
 <div>
+<select id='left' onchange="if (this.selectedIndex >=0 ) colorItOnce();">
+  <option value="red" >red</option>
+  <option value="orange" selected="selected">orange</option>
+  <option value="yellow">yellow</option>
+  <option value="green">green</option>
+  <option value="indigo">indigo</option>
+  <option value="violet">violet</option>
+</select >
+<select id ='right' onchange="if (this.selectedIndex >= 0 ) colorItOnce();">
+  <option value="red">red</option>
+  <option value="orange">orange</option>
+  <option value="yellow">yellow</option>
+  <option value="green" selected="selected">green</option>
+  <option value="indigo">indigo</option>
+  <option value="violet">violet</option>
+</select>
+</div
+<div>
 <canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
@@ -93,18 +111,7 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 		this.ctx.lineWidth=20;
 		this.ctx.beginPath();
 		this.ctx.arc(this.fakePointx,this.fakePointy,this.r,0,2*Math.PI);
-		if (colored == true)
-		{
-		if (color == "red")
-		{
-			//this.ctx.fillStyle = 'green';
-			//this.ctx.fill();
-		}
-		else{
-			//this.ctx.fillStyle = 'orange';
-			//this.ctx.fill();
-		}
-		}
+
 		this.ctx.stroke();
 		this.ctx.closePath();
 
@@ -113,17 +120,8 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 		this.ctx2.arc(this.innerfakePointx,this.innerfakePointy,this.innerr,0,2*Math.PI);
 		if (colored == true)
 		{
-		if (color == "red")
-		{
-			//this.ctx2.strokeStyle="orange"
-			this.ctx2.fillStyle = 'green';
+			this.ctx2.fillStyle = color;
 			this.ctx2.fill();
-		}
-		else{
-			//this.ctx2.strokeStyle="green"
-			this.ctx2.fillStyle = 'orange';
-			this.ctx2.fill();
-		}
 		}
 
 		this.ctx2.stroke();
@@ -146,7 +144,8 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 		this.const(factor, startX, startY);
 }
 
-
+	var l = document.getElementById("right");
+	var r = document.getElementById("left");
 
 var delay = 200;
 var MaxWidth = 700;
@@ -172,8 +171,8 @@ rightCircle.innerCircle(rightSign);
 
 leftCircle.clear();
 rightCircle.clear();
-leftCircle.draw();
-rightCircle.draw();
+rightCircle.draw("green");
+leftCircle.draw("orange");
 
 function stopIt() 
 {
@@ -201,9 +200,24 @@ var colorIt = function() {
 	leftCircle.clear();
 	rightCircle.clear();
 		
-	rightCircle.draw("red");
-	leftCircle.draw();
+	rightCircle.draw(l.options[l.selectedIndex].value);
+	leftCircle.draw(r.options[r.selectedIndex].value);
 }
+
+var colorItOnce = function() {
+	if (colored) {
+	leftCircle.const(3, leftLoc);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+		
+	rightCircle.draw(l.options[l.selectedIndex].value);
+	leftCircle.draw(r.options[r.selectedIndex].value);
+	}
+}
+
 
 function myMove() {
 setTimeout(myMove, delay);
@@ -238,9 +252,11 @@ setTimeout(myMove, delay);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
-		
-	rightCircle.draw("red");
-	leftCircle.draw();
+
+	console.log("DDD");
+	console.log(r);
+	rightCircle.draw(l.options[l.selectedIndex].value);
+	leftCircle.draw(r.options[r.selectedIndex].value);
 
 	}
   }
