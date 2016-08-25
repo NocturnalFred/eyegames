@@ -185,9 +185,15 @@ swap = leftSign;
 leftSign = rightSign;
 rightSign = swap;
 
-
-leftCircle.innerCircle(leftSign);
-rightCircle.innerCircle(rightSign);
+	leftCircle.const(3, leftLoc);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+		
+	rightCircle.draw(l.options[l.selectedIndex].value);
+	leftCircle.draw(r.options[r.selectedIndex].value);
 
 }
 
@@ -205,7 +211,7 @@ var colorIt = function() {
 }
 
 var colorItOnce = function() {
-	if (colored) {
+	
 	leftCircle.const(3, leftLoc);
 	leftCircle.innerCircle(rightSign);
 	rightCircle.const(3, rightLoc);
@@ -215,7 +221,7 @@ var colorItOnce = function() {
 		
 	rightCircle.draw(l.options[l.selectedIndex].value);
 	leftCircle.draw(r.options[r.selectedIndex].value);
-	}
+
 }
 
 
