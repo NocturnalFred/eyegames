@@ -88,7 +88,7 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 	}
 
 	this.draw = function(color) {
-	    color = typeof color !== 'undefined' ? color : "red";
+	   
 		this.ctx2.strokeStyle="#000000";
 		this.ctx.lineWidth=20;
 		this.ctx.beginPath();
@@ -171,8 +171,9 @@ leftCircle.innerCircle(leftSign);
 rightCircle.innerCircle(rightSign);
 
 leftCircle.clear();
+rightCircle.clear();
 leftCircle.draw();
-rightCircle.draw("green");
+rightCircle.draw();
 
 function stopIt() 
 {
@@ -193,10 +194,15 @@ rightCircle.innerCircle(rightSign);
 
 var colorIt = function() {
 	colored = !(colored);
+	leftCircle.const(3, leftLoc);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc);
+	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
-	leftCircle.draw("green");
-	rightCircle.draw();
+		
+	rightCircle.draw("red");
+	leftCircle.draw();
 }
 
 function myMove() {
@@ -233,7 +239,7 @@ setTimeout(myMove, delay);
 	leftCircle.clear();
 	rightCircle.clear();
 		
-	rightCircle.draw("green");
+	rightCircle.draw("red");
 	leftCircle.draw();
 
 	}
