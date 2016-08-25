@@ -118,15 +118,11 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 			//this.ctx2.strokeStyle="orange"
 			this.ctx2.fillStyle = 'green';
 			this.ctx2.fill();
-			this.ctx.fillStyle = 'orange';
-			this.ctx.fill();
 		}
 		else{
 			//this.ctx2.strokeStyle="green"
 			this.ctx2.fillStyle = 'orange';
 			this.ctx2.fill();
-			this.ctx.fillStyle = 'green';
-			this.ctx.fill();
 		}
 		}
 
@@ -154,7 +150,7 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 
 var delay = 200;
 var MaxWidth = 700;
-var shift = 200;
+var shift = 270;
 var width = 600;
 var leftLoc = shift+10;
 var rightLoc = shift+width;
@@ -192,18 +188,15 @@ rightSign = swap;
 
 leftCircle.innerCircle(leftSign);
 rightCircle.innerCircle(rightSign);
-leftCircle.clear();
-rightCircle.clear();
-leftCircle.draw();
-rightCircle.draw("green");
+
 }
 
 var colorIt = function() {
 	colored = !(colored);
 	leftCircle.clear();
 	rightCircle.clear();
-	leftCircle.draw();
-	rightCircle.draw("green");
+	leftCircle.draw("green");
+	rightCircle.draw();
 }
 
 function myMove() {
@@ -211,17 +204,21 @@ setTimeout(myMove, delay);
 	if (typeof document.getElementById('delay').value !== 'undefined')
 		if (document.getElementById('delay').value >= 20)
 			delay = document.getElementById('delay').value;
+		else if(document.getElementById('delay').value < 20)
+			delay = 10;
+		else if(document.getElementById('delay').value >=1000)
+			delay = 1000;
 		else
-			delay = 20;
+			delay = 200;
 	if (typeof document.getElementById('width').value !== 'undefined')
-		if (document.getElementById('width').value >= 600)
+		if (document.getElementById('width').value >= 500)
 			MaxWidth = document.getElementById('width').value;
 		else
 			MaxWidth = 600;		
 	
 	if (stop != true)
 	{
-	if (rightLoc-leftLoc < 550 && shifter > 0)
+	if (rightLoc-leftLoc < 500 && shifter > 0)
 		shifter = shifter * dir;
 	else if (rightLoc - leftLoc > MaxWidth && shifter < 0)
 		shifter = shifter * dir;
@@ -235,8 +232,10 @@ setTimeout(myMove, delay);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
-	leftCircle.draw();
+		
 	rightCircle.draw("green");
+	leftCircle.draw();
+
 	}
   }
 myMove();
