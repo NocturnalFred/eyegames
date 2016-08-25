@@ -12,6 +12,11 @@
 <div>
 <button onclick="stopIt()">Start/Stop circles</button>
 </div>
+<div>Speed: <input type="text" name="delay" value="200" id="delay"><br>
+<div>MaxWidth: <input type="text" name="width" value="700" id="width"><br>
+
+<button onclick="stopIt()">Start/Stop circles</button>
+</div>
 <div>
 <canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
 Your browser does not support the HTML5 canvas tag.
@@ -22,7 +27,7 @@ var colored = false;
 var stop = true;
 //the eCircle class takes in a factor for the size of the circle, the name of the canvas, and 
 //starting x and y locs for the cooridinates of the circles.
-var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
+var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 	var c = document.getElementById(canvas);
 	this.x=startX;
 	this.y=startY;
@@ -35,7 +40,7 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 		this.innery=0;
 		this.innerx=0;
     this.r=factor*70;
-	this.const = function (factor=3, xLoc) {
+	this.const = function (factor, xLoc) {
 		this.x=xLoc;
 		this.y=this.y;
 
@@ -58,7 +63,7 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 	//for the leftEdge it is easier.  Just add the width to the innerr.
 
 	var distanceFromEdge=35;
-	this.innerr=this.r*(5/7);
+	this.innerr=this.r*(6/8);
 	//You need to account for the width of the line for hte circle (the - 10 here)
 	var rightEdge = this.x + distanceFromEdge;
 	var leftEdge = this.x + this.r*2 - this.innerr*2 - distanceFromEdge;
@@ -82,12 +87,24 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 		this.innerfakePointy = this.innery + this.innerr;
 	}
 
-	this.draw = function(color="red") {
-	
+	this.draw = function(color) {
+	    color = typeof color !== 'undefined' ? color : "red";
 		this.ctx2.strokeStyle="#000000";
 		this.ctx.lineWidth=20;
 		this.ctx.beginPath();
 		this.ctx.arc(this.fakePointx,this.fakePointy,this.r,0,2*Math.PI);
+		if (colored == true)
+		{
+		if (color == "red")
+		{
+			//this.ctx.fillStyle = 'green';
+			//this.ctx.fill();
+		}
+		else{
+			//this.ctx.fillStyle = 'orange';
+			//this.ctx.fill();
+		}
+		}
 		this.ctx.stroke();
 		this.ctx.closePath();
 
@@ -101,13 +118,18 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 			//this.ctx2.strokeStyle="orange"
 			this.ctx2.fillStyle = 'green';
 			this.ctx2.fill();
+			this.ctx.fillStyle = 'orange';
+			this.ctx.fill();
 		}
 		else{
 			//this.ctx2.strokeStyle="green"
 			this.ctx2.fillStyle = 'orange';
 			this.ctx2.fill();
+			this.ctx.fillStyle = 'green';
+			this.ctx.fill();
 		}
 		}
+
 		this.ctx2.stroke();
 		this.ctx2.closePath();
 		this.ctx2.fillStyle = 'black';
@@ -130,7 +152,8 @@ var ecircle = ecircle || function (factor=3, canvas, startX = 0, startY = 0 ) {
 
 
 
-
+var delay = 200;
+var MaxWidth = 700;
 var shift = 200;
 var width = 600;
 var leftLoc = shift+10;
@@ -184,12 +207,23 @@ var colorIt = function() {
 }
 
 function myMove() {
-setTimeout(myMove, 200);
+setTimeout(myMove, delay);
+	if (typeof document.getElementById('delay').value !== 'undefined')
+		if (document.getElementById('delay').value >= 20)
+			delay = document.getElementById('delay').value;
+		else
+			delay = 20;
+	if (typeof document.getElementById('width').value !== 'undefined')
+		if (document.getElementById('width').value >= 600)
+			MaxWidth = document.getElementById('width').value;
+		else
+			MaxWidth = 600;		
+	
 	if (stop != true)
 	{
 	if (rightLoc-leftLoc < 550 && shifter > 0)
 		shifter = shifter * dir;
-	else if (rightLoc - leftLoc > 700 && shifter < 0)
+	else if (rightLoc - leftLoc > MaxWidth && shifter < 0)
 		shifter = shifter * dir;
 	
 	leftLoc = leftLoc + shifter;
