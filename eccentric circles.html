@@ -158,7 +158,7 @@ var leftLoc = shift+10;
 var rightLoc = shift+width;
 var leftYLocB = 40;
 var rightYLoc = 40;
-var updownShift = 2;
+var updownShift = 1;
 var yWidth = 0;
 var requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
@@ -283,7 +283,7 @@ height
 	
 	leftCircle.const(3, leftLoc, leftYLocB);
 	leftCircle.innerCircle(rightSign);
-	rightCircle.const(3, rightLoc, rightYLoc);
+	rightCircle.const(3, rightLoc, leftYLocB);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
