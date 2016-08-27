@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-<body>
+<html >
+<body bgcolor="#E6E6FA">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <div>
 <div  style="display: inline-block;">
@@ -205,9 +205,9 @@ rightSign = swap;
 
 var colorIt = function() {
 	colored = !(colored);
-	leftCircle.const(3, leftLoc);
+	leftCircle.const(3, leftLoc, leftYLocB);
 	leftCircle.innerCircle(rightSign);
-	rightCircle.const(3, rightLoc);
+	rightCircle.const(3, rightLoc, leftYLocB);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
@@ -218,9 +218,9 @@ var colorIt = function() {
 
 var colorItOnce = function() {
 	
-	leftCircle.const(3, leftLoc);
+	leftCircle.const(3, leftLoc, leftYLocB);
 	leftCircle.innerCircle(rightSign);
-	rightCircle.const(3, rightLoc);
+	rightCircle.const(3, rightLoc, leftYLocB);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
