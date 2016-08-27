@@ -2,7 +2,8 @@
 <html>
 <body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-
+<div>
+<div  style="display: inline-block;">
 <div>
 <button onclick="swap()">swap directions</button>
 </div>
@@ -12,11 +13,12 @@
 <div>
 <button onclick="stopIt()">Start/Stop circles</button>
 </div>
-<div>Speed: <input type="text" name="delay" value="200" id="delay"><br>
-<div>MaxWidth: <input type="text" name="width" value="700" id="width"><br>
-<div>MaxHeight: <input type="text" name="height" value="0" id="height"><br>
-<button onclick="stopIt()">Start/Stop circles</button>
 </div>
+<div style="display: inline-block;">Speed: <input type="text" name="delay" value="200" id="delay"><br>
+MaxWidth: <input type="text" name="width" value="700" id="width"><br>
+MaxHeight: <input type="text" name="height" value="0" id="height"><br>
+
+
 <div>
 <select id='left' onchange="if (this.selectedIndex >=0 ) colorItOnce();">
   <option value="red" >red</option>
@@ -36,8 +38,10 @@
   <option value="indigo">indigo</option>
   <option value="violet">violet</option>
 </select>
-</div
-<div>
+</div>
+</div>
+</div>
+<div >
 <canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
