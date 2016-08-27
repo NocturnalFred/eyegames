@@ -42,7 +42,7 @@ MaxHeight: <input type="text" name="height" value="0" id="height"><br>
 </div>
 </div>
 <div >
-<canvas id="myCanvas" width="1600" height="500" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
+<canvas id="myCanvas" width="1600" height="1000" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 </div>
@@ -142,7 +142,7 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 
 	}
 	this.clear = function() {
-		this.ctx.clearRect(0, 0, 1600, 500);
+		this.ctx.clearRect(0, 0, 1600, 1000);
 	}
 		this.const(factor, startX, startY);
 }
@@ -156,14 +156,12 @@ var shift = 270;
 var width = 600;
 var leftLoc = shift+10;
 var rightLoc = shift+width;
-var leftYLocB = 40;
-var rightYLoc = 40;
+
 var updownShift = 1;
 var yWidth = 0;
-var requestAnimationFrame = window.requestAnimationFrame || 
-                            window.mozRequestAnimationFrame || 
-                            window.webkitRequestAnimationFrame || 
-                            window.msRequestAnimationFrame;
+var baseY = 80;
+var leftYLocB = baseY;
+var rightYLoc = baseY;
 var 	shifter = 1;
 var 	dir = -1;
 
@@ -264,7 +262,7 @@ height
 		shifter = shifter * dir;
 	if (yWidth != 0)
 	{
-	if (rightYLoc <=yWidth && leftYLocB >= 40 || leftYLocB <=yWidth && rightYLoc >= 40 )
+	if (rightYLoc <=yWidth +baseY && leftYLocB >= baseY + 40 || leftYLocB <=yWidth +baseY && rightYLoc >= baseY + 40 )
 	{
 		updownShift = updownShift * -1;
 	}
@@ -273,8 +271,8 @@ height
 		rightYLoc = (rightYLoc + updownShift);
 	}
 	else{
-			    leftYLocB = 40;
-		rightYLoc = 40;
+			    leftYLocB = baseY;
+		rightYLoc = baseY;
 	}
 
 
