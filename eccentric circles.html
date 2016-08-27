@@ -14,7 +14,7 @@
 </div>
 <div>Speed: <input type="text" name="delay" value="200" id="delay"><br>
 <div>MaxWidth: <input type="text" name="width" value="700" id="width"><br>
-
+<div>MaxHeight: <input type="text" name="height" value="0" id="height"><br>
 <button onclick="stopIt()">Start/Stop circles</button>
 </div>
 <div>
@@ -22,6 +22,7 @@
   <option value="red" >red</option>
   <option value="orange" selected="selected">orange</option>
   <option value="yellow">yellow</option>
+  <option value="blue">blue</option>
   <option value="green">green</option>
   <option value="indigo">indigo</option>
   <option value="violet">violet</option>
@@ -30,6 +31,7 @@
   <option value="red">red</option>
   <option value="orange">orange</option>
   <option value="yellow">yellow</option>
+  <option value="blue">blue</option>
   <option value="green" selected="selected">green</option>
   <option value="indigo">indigo</option>
   <option value="violet">violet</option>
@@ -58,9 +60,9 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 		this.innery=0;
 		this.innerx=0;
     this.r=factor*70;
-	this.const = function (factor, xLoc) {
+	this.const = function (factor, xLoc, yLoc) {
 		this.x=xLoc;
-		this.y=this.y;
+		this.y=yLoc;
 
 	}
 	this.innerCircle = function(sign) {
@@ -130,10 +132,7 @@ var ecircle = ecircle || function (factor, canvas, startX , startY ) {
 		this.textCanvas.font = "30px Arial";
 		var fontSize = this.textCanvas.measureText("Hello World");
 		var fontx = (this.innerr*2 - fontSize.width)/2+this.innerx;
-		console.log(fontSize);
-		console.log("fontx:" +fontx);
-		console.log(this.innerx);
-		console.log("innerR: " + this.innerr);
+
 		this.textCanvas.fillText("Hello World",fontx+this.textMove,this.innery+5+this.innerr);
 		this.textCanvas.closePath();
 
@@ -153,6 +152,10 @@ var shift = 270;
 var width = 600;
 var leftLoc = shift+10;
 var rightLoc = shift+width;
+var leftYLocB = 40;
+var rightYLoc = 40;
+var updownShift = 2;
+var yWidth = 0;
 var requestAnimationFrame = window.requestAnimationFrame || 
                             window.mozRequestAnimationFrame || 
                             window.webkitRequestAnimationFrame || 
@@ -161,8 +164,8 @@ var 	shifter = 1;
 var 	dir = -1;
 
 
-var leftCircle = new ecircle(3, "myCanvas", rightLoc, 30);
-var rightCircle  = new ecircle(3, "myCanvas", leftLoc , 30);
+var leftCircle = new ecircle(3, "myCanvas", rightLoc, leftYLocB);
+var rightCircle  = new ecircle(3, "myCanvas", leftLoc , rightYLoc);
 var leftSign = '+';
 var rightSign = '-';
 leftCircle.innerCircle(leftSign);
@@ -241,7 +244,13 @@ setTimeout(myMove, delay);
 		if (document.getElementById('width').value >= 500)
 			MaxWidth = document.getElementById('width').value;
 		else
-			MaxWidth = 600;		
+			MaxWidth = 600;	
+	if (typeof document.getElementById('height').value !== 'undefined')
+		if (document.getElementById('height').value <= 38 && document.getElementById('height').value >=0)
+			yWidth = document.getElementById('height').value;
+		else
+			yWidth = 0;	
+height			
 	
 	if (stop != true)
 	{
@@ -249,19 +258,34 @@ setTimeout(myMove, delay);
 		shifter = shifter * dir;
 	else if (rightLoc - leftLoc > MaxWidth && shifter < 0)
 		shifter = shifter * dir;
-	
+	if (yWidth != 0)
+	{
+	if (rightYLoc <=yWidth && leftYLocB >= 40 || leftYLocB <=yWidth && rightYLoc >= 40 )
+	{
+		updownShift = updownShift * -1;
+	}
+	console.log(leftYLocB);
+	    leftYLocB = (leftYLocB - updownShift);
+		rightYLoc = (rightYLoc + updownShift);
+	}
+	else{
+			    leftYLocB = 40;
+		rightYLoc = 40;
+	}
+
+
 	leftLoc = leftLoc + shifter;
 	rightLoc = rightLoc - shifter;
 	
-	leftCircle.const(3, leftLoc);
+	leftCircle.const(3, leftLoc, leftYLocB);
 	leftCircle.innerCircle(rightSign);
-	rightCircle.const(3, rightLoc);
+	rightCircle.const(3, rightLoc, rightYLoc);
 	rightCircle.innerCircle(leftSign);
 	leftCircle.clear();
 	rightCircle.clear();
 
-	console.log("DDD");
-	console.log(r);
+
+
 	rightCircle.draw(l.options[l.selectedIndex].value);
 	leftCircle.draw(r.options[r.selectedIndex].value);
 
