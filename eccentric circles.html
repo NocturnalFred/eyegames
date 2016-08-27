@@ -262,7 +262,7 @@ height
 		shifter = shifter * dir;
 	if (yWidth != 0)
 	{
-	if (rightYLoc <=yWidth +baseY && leftYLocB >= baseY + 40 || leftYLocB <=yWidth +baseY && rightYLoc >= baseY + 40 )
+	if (rightYLoc <=yWidth +baseY && leftYLocB >= baseY + yWidth*2 || leftYLocB <=yWidth +baseY && rightYLoc >= baseY + yWidth*2 )
 	{
 		updownShift = updownShift * -1;
 	}
