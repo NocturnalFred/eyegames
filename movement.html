@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html >
+<body bgcolor="#FFFFF">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+
+<div >
+<canvas id="myCanvas" width="800" height="1000" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -400px;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+</div>
+<script>
+
+var intersection = function(R1, R2, width) {
+
+var p = (R1 + R2 + width)/2;
+var area = Math.sqrt(p*(p-R1)*(p-R2)*(p-width));
+var h = (2*area/width);
+var x = (Math.sqrt(Math.pow(R1, 2) - Math.pow(h,2)));
+var arr = [x,h];
+return arr;
+
+}
+
+function generateArc(R1, R2, width) {
+
+}
+
+//the eCircle class takes in a factor for the size of the circle, the name of the canvas, and 
+//starting x and y locs for the cooridinates of the circles.
+var PolyGon = PolyGon || function(context, color, PointArray)
+{
+	this.POINTS = PointArray;
+	this.color = color;
+	this.contxt = document.getElementById(context).getContext("2d");
+
+	this.draw = function()
+	{
+		POINTS = this.POINTS;
+		this.contxt.strokeStyle=this.color;	
+		this.contxt.fillStyle=this.color;	
+		this.contxt.lineWidth=2;
+		this.contxt.beginPath();
+		this.contxt.moveTo(POINTS[0][0], POINTS[0][1]);
+		for (var a=1; a < POINTS.length; ++a)
+		{
+			this.contxt.lineTo(POINTS[a][0], POINTS[a][1]);
+		}
+		
+		this.contxt.stroke();
+		this.contxt.closePath();
+		this.contxt.fill();
+		
+	}
+
+};
+
+
+var baseCircle = baseCircle || function(x, y, r, c, w, contxt) {
+
+	
+	/*
+		X cooridinate
+		Y Cooridinate
+		radius
+		color
+	*/
+	//To cut down on typing I'm using single letter variables.
+	//X,Y, and R are obvious.
+	//C = color
+	//W = line width
+	//contxt = the contxt of the html canvas that needs to be passed in so you can draw to it.
+	this.X = x;
+	this.Y = y;
+	this.R = r;
+	this.C = c;
+	this.W = w;
+	this.contxt = document.getElementById(contxt).getContext("2d");
+
+	
+	this.draw = function() {
+	 //	    var ctx1 = document.getElementById(contxt).getContext("2d");
+	 // 	var ctx2 = document.getElementById(contxt).getContext("2d");  
+		this.contxt.globalAlpha=.9;
+		this.contxt.strokeStyle=this.C;
+		this.contxt.lineWidth=this.W;
+
+		this.contxt.beginPath();
+		this.contxt.arc(this.X,this.Y,this.R,0,2*Math.PI);
+		this.contxt.stroke();
+		this.contxt.closePath();
+	}
+	this.clear = function() {
+		this.contxt.clearRect(0, 0, 500, 1000);
+	}
+};
+
+var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
+	this.X = x;
+	this.Y = y;
+	this.R = r;
+	this.W = w;
+	this.context=contxt;
+	this.contxt = document.getElementById(contxt).getContext("2d");
+	this.width = width;
+	left = new baseCircle(this.X, this.Y, this.R, "#F20", this.W, contxt);
+	right = new baseCircle(this.X + this.width, this.Y, this.R, "#00FFFF", this.W, contxt);
+	this.draw = function() {
+		right.draw();	
+		left.draw();
+		
+		var top = new Array();
+		var bottom = new Array();
+		//Start with the inner widths, increaseing the width for one side.
+		for (var a = 1; a < this.W; a++)
+		{
+			var info = intersection(this.R+this.W/2, this.R-this.W/2+a, this.width);
+			var info2 = intersection(this.R+this.W/2, this.R-this.W/2+a, this.width);
+			info[0] = this.X + info[0];
+			info[1] = this.Y + info[1]-1;
+			top.push(info);
+ 
+			info2[0] = this.X + info2[0];
+			info2[1] = this.Y - info2[1]+1;
+			bottom.push(info2);
+			
+		}
+		
+		for (var a = 1; a < this.W; a++)
+		{
+			var info = intersection(this.R+this.W/2-a, this.R+this.W/2, this.width);
+			var info2 = intersection(this.R+this.W/2-a, this.R+this.W/2, this.width);
+			info[0] = this.X + info[0];
+			info[1] = this.Y + info[1]-1;
+			top.push(info);
+ 
+			info2[0] = this.X + info2[0];
+			info2[1] = this.Y - info2[1]+1;
+			bottom.push(info2);
+			
+		}
+		for (var a = 1; a < this.W; a++)
+		{
+			var info = intersection(this.R-this.W/2, this.R+this.W/2-a, this.width);
+			var info2 = intersection(this.R-this.W/2, this.R+this.W/2-a, this.width);
+			info[0] = this.X + info[0];
+			info[1] = this.Y + info[1]+1;
+			top.push(info);
+ 
+			info2[0] = this.X + info2[0];
+			info2[1] = this.Y - info2[1]-1;
+			bottom.push(info2);
+			
+		
+		}
+		for (var a = 1; a < this.W; a++)
+		{
+			var info = intersection(this.R-this.W/2+a, this.R-this.W/2, this.width);
+			var info2 = intersection(this.R-this.W/2+a, this.R-this.W/2, this.width);			
+			info[0] = this.X + info[0];
+			info[1] = this.Y + info[1]+1;
+			top.push(info);
+ 
+			info2[0] = this.X + info2[0];
+			info2[1] = this.Y - info2[1]-1;
+			bottom.push(info2);
+			
+		}
+
+
+		
+		var poly = new PolyGon(this.context, "#222", top);
+		var poly2 = new PolyGon(this.context, "#333", bottom);
+		poly.draw();
+		poly2.draw();
+
+
+
+	}
+};
+
+var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
+ff.draw()
+var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
+ee.draw();
+
+
+function keydown(ev) {
+
+      var handled = false;
+    //alert(ev.keyCode);
+	
+	var clear = document.getElementById("myCanvas").getContext("2d");
+	clear.clearRect(0, 0, 800, 1000);
+        switch(ev.keyCode) {
+		
+			//up
+          case 38:   var first = new anagCircle(150, 150, 100, "ffA100", 10, "myCanvas", 40); first.draw(); handled = true; 
+		  var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
+ff.draw()
+var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
+ee.draw();
+		  break;
+			//down
+          case 40:   var first = new anagCircle(140, 150, 100, "ffA100", 10, "myCanvas", 60); first.draw(); handled = true; 
+		  var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
+ff.draw()
+var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
+ee.draw();break;
+        }
+      
+      if (ev.keyCode == KEY.SPACE) {
+	  
+        handled = true;
+		
+      }
+      if (handled)
+        ev.preventDefault(); // prevent arrow keys from scrolling the page (supported in IE9+ and all other browsers)
+    }
+document.addEventListener('keydown', keydown, false);
+
+</script>
+
+</body>
+</html>
