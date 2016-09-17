@@ -177,7 +177,8 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 
 	}
 };
-
+var first = new anagCircle(150, 150, 100, "ffA100", 10, "myCanvas", 40); 
+first.draw();
 var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
 ff.draw()
 var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
@@ -188,7 +189,11 @@ function keydown(ev) {
 
       var handled = false;
     //alert(ev.keyCode);
-	
+	var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
+ff.draw()
+var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
+ee.draw();
+
 	var clear = document.getElementById("myCanvas").getContext("2d");
 	clear.clearRect(0, 0, 800, 1000);
         switch(ev.keyCode) {
