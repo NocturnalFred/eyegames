@@ -4,7 +4,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
 <div >
-<canvas id="myCanvas" width="800" height="1000" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -400px;">
+<canvas id="myCanvas" width="1040" height="1000" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -520px;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 </div>
@@ -95,7 +95,11 @@ var baseCircle = baseCircle || function(x, y, r, c, w, contxt) {
 };
 
 var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
-	this.X = x;
+	this.findAnX = function (x,width) {  //canvas sees left circle as base location
+		return x - width/2 ;
+	
+	}
+	this.X = this.findAnX(x,width);
 	this.Y = y;
 	this.R = r;
 	this.W = w;
@@ -104,7 +108,12 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 	this.width = width;
 	left = new baseCircle(this.X, this.Y, this.R, "#F20", this.W, contxt);
 	right = new baseCircle(this.X + this.width, this.Y, this.R, "#00FFFF", this.W, contxt);
+	
+	
+
+	
 	this.draw = function() {
+	console.log("drawing");
 		right.draw();	
 		left.draw();
 		
@@ -177,49 +186,125 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 
 	}
 };
-var first = new anagCircle(150, 150, 100, "ffA100", 10, "myCanvas", 40); 
-first.draw();
-var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
-ff.draw()
-var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
-ee.draw();
+
+//four circles, left, right, top, bottom
+//randomized distances, make sure the one that is the "correct" answer isn't the same as any of hte others.
+
+//lets store the circles in an array, top = 0, left =1, right =2, and bottom =3 
+
+
+
+//Choose correct circle.
+var correct = 0;
+var newGame = function () {
+
+	var clear = document.getElementById("myCanvas").getContext("2d");
+	clear.clearRect(0, 0, 1040, 1000);
+
+	var T = new Date().getSeconds();
+	correct = T % 4;
+
+	var theSame = true;  //sentinel to check that "answer" and the rest of the circles are not the same.
+	var minWidth = 40;
+	var maxWidth = 160;
+	var difference = maxWidth - minWidth;
+
+	var widthArray = new Array();
+
+	for (var i = 0; i < 4; i++)
+	{
+		widthArray.push(Math.ceil(difference*Math.random() + 40));
+		console.log(i);
+			console.log(widthArray[i]);
+	}
+
+	var i = 0;
+
+	while(i < 4)
+	{
+		if ( Math.abs(widthArray[correct] - widthArray[i]) <= 10 && i != correct)
+		{
+			widthArray[i] = Math.ceil(difference*Math.random()) + 40;
+
+		} else {
+			i++;
+		}
+	}
+
+	var middleY = 315;
+	var top = new anagCircle(530, 110, 90, "ffA100", 10, "myCanvas", widthArray[0]); 
+
+	top.draw();
+	var bottom = new anagCircle(530, 520, 90, "ffA100", 10, "myCanvas", widthArray[3]);
+
+	bottom.draw();
+	var middle = new anagCircle(530, middleY, 90, "ffA100", 10, "myCanvas", widthArray[correct]);
+
+	middle.draw();
+
+	//take width from "middle" which will be the widht of the "correct" circle and use base of 530 as the beginning 
+	//for the "x" cooridante you need for the left and right sides.
+
+	var distanceFromCenter = (90 + widthArray[correct]/2);
+	var rightLengthOfLeft = (105 + widthArray[1]/2);
+	var leftLengthOfRight = (105 + widthArray[2]/2);
+	var left = new anagCircle(530 - distanceFromCenter - rightLengthOfLeft, middleY, 90, "ffA100", 10, "myCanvas", widthArray[1]); 
+
+	left.draw();
+	var right = new anagCircle(530 + distanceFromCenter + leftLengthOfRight, middleY, 90, "ffA100", 10, "myCanvas", widthArray[2]); 
+
+	right.draw();
+		
+
+
+	//genuine center is 400.  Thus I must calculate an "X" to give the middle circle
+	//such that the whole thing will appear to be in the center.
+	//No fuck that, I'm going to have the anaglyph function take the true "center" and then
+	//do math to identify the proper x for that center.
+
+
+
+
+}
+
+ newGame();
+
+
+function checkCorrect(choice)
+{
+	if (choice == correct)
+	{
+		alert("correct");
+		newGame();
+
+		
+		
+	}
+}
 
 
 function keydown(ev) {
 
-      var handled = false;
-    //alert(ev.keyCode);
-	var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
-ff.draw()
-var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
-ee.draw();
+   // alert(ev.keyCode);
 
-	var clear = document.getElementById("myCanvas").getContext("2d");
-	clear.clearRect(0, 0, 800, 1000);
-        switch(ev.keyCode) {
-		
+
+        switch(ev.keyCode) {		
 			//up
-          case 38:   var first = new anagCircle(150, 150, 100, "ffA100", 10, "myCanvas", 40); first.draw(); handled = true; 
-		  var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
-ff.draw()
-var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
-ee.draw();
+          case 38:   checkCorrect(0);
+
 		  break;
 			//down
-          case 40:   var first = new anagCircle(140, 150, 100, "ffA100", 10, "myCanvas", 60); first.draw(); handled = true; 
-		  var ff = new anagCircle(150, 380, 100, "ffA100", 10, "myCanvas", 40); 
-ff.draw()
-var ee = new anagCircle(420, 150, 100, "ffA100", 10, "myCanvas", 60); 
-ee.draw();break;
+          case 40:   checkCorrect(3);
+		  
+		  break;
+		  //right
+		  case 39:	 checkCorrect(2);
+		  
+		  break;
+		  //left
+		  case 37:	 checkCorrect(1);
         }
-      
-      if (ev.keyCode == KEY.SPACE) {
-	  
-        handled = true;
-		
-      }
-      if (handled)
-        ev.preventDefault(); // prevent arrow keys from scrolling the page (supported in IE9+ and all other browsers)
+ 
     }
 document.addEventListener('keydown', keydown, false);
 
