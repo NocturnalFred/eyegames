@@ -2,13 +2,33 @@
 <html >
 <body bgcolor="#FFFFF">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-
+<div style="float:right;position: fixed;left: 55%;margin-left: -520px;  font-size: 250%">
+Total:
+<div id="TotalPoints" >
+D
+</div>
+</div>
+<div style="float:right;position: fixed;left: 65%;margin-left: -520px;  font-size: 250%">
+Streak:
+<div id="CurrentStreak">
+B
+</div>
+</div>
+<div></div>
 <div >
 <canvas id="myCanvas" width="1040" height="1000" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -520px;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 </div>
 <script>
+
+
+
+var Total = 0;
+var TotalDiv = document.getElementById("TotalPoints");
+
+var currentStreak = 0;
+var currentStreakDiv = document.getElementById("CurrentStreak");
 
 var intersection = function(R1, R2, width) {
 
@@ -106,7 +126,7 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 	this.context=contxt;
 	this.contxt = document.getElementById(contxt).getContext("2d");
 	this.width = width;
-	left = new baseCircle(this.X, this.Y, this.R, "#F20", this.W, contxt);
+	left = new baseCircle(this.X, this.Y, this.R, "#FF0000", this.W, contxt);
 	right = new baseCircle(this.X + this.width, this.Y, this.R, "#00FFFF", this.W, contxt);
 	
 	
@@ -198,6 +218,10 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 var correct = 0;
 var newGame = function () {
 
+	TotalDiv.innerHTML = Total;
+
+	currentStreakDiv.innerHTML = currentStreak;
+
 	var clear = document.getElementById("myCanvas").getContext("2d");
 	clear.clearRect(0, 0, 1040, 1000);
 
@@ -222,7 +246,7 @@ var newGame = function () {
 
 	while(i < 4)
 	{
-		if ( Math.abs(widthArray[correct] - widthArray[i]) <= 10 && i != correct)
+		if ( Math.abs(widthArray[correct] - widthArray[i]) <= 20 && i != correct)
 		{
 			widthArray[i] = Math.ceil(difference*Math.random()) + 40;
 
@@ -274,11 +298,19 @@ function checkCorrect(choice)
 {
 	if (choice == correct)
 	{
-		alert("correct");
-		newGame();
+		currentStreak += 1;
+		if (currentStreak > Total)
+		{
+			Total = currentStreak;
+		}
 
-		
-		
+		currentStreakDiv.innerHTML = currentStreak;
+		newGame();	
+	}
+	else
+	{
+		currentStreak = 0;
+		currentStreakDiv.innerHTML = currentStreak;
 	}
 }
 
