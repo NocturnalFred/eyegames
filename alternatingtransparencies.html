@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html >
+<body bgcolor="#E6E6FA">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<div>
+<div  style="display: inline-block;">
+<div>
+<button onclick="swap()">swap directions</button>
+</div>
+<div>
+<button onclick="colorIt()">Color ON/OFF</button>
+</div>
+<div>
+<button onclick="stopIt()">Start/Stop circles</button> <button onclick="reset()">reset</button>
+</div>
+</div>
+<div style="display: inline-block;">Speed: <input type="text" name="delay" value="200" id="delay"><br>
+MaxWidth: <input type="text" name="width" value="700" id="width"><br>
+MaxHeight: <input type="text" name="height" value="0" id="height"><br>
+Transparency Time: <input type="text" name="trans" value="0.5" id="trans"><br>
+
+<div>
+<select id='left' onchange="if (this.selectedIndex >=0 ) colorItOnce();">
+  <option value="red" >red</option>
+  <option value="orange" selected="selected">orange</option>
+  <option value="yellow">yellow</option>
+  <option value="blue">blue</option>
+  <option value="green">green</option>
+  <option value="indigo">indigo</option>
+  <option value="violet">violet</option>
+  <option value="#FAE6B1">invisibleRed</option>
+  <option value="#ea9e88">InvisibleBlue</option>
+</select >
+<select id ='right' onchange="if (this.selectedIndex >= 0 ) colorItOnce();">
+  <option value="red">red</option>
+  <option value="orange">orange</option>
+  <option value="yellow">yellow</option>
+  <option value="blue">blue</option>
+  <option value="green" selected="selected">green</option>
+  <option value="indigo">indigo</option>
+  <option value="violet">violet</option>
+    <option value="#FAE6B1">invisibleRed</option>
+  <option value="#B4FAFA">InvisibleBlue</option>
+</select>
+</div>
+</div>
+
+</div>
+<div >
+<canvas id="myCanvas" width="1600" height="800" style="border:1px solid #c3c3c3;position: fixed;left: 50%;margin-left: -800px;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+</div>
+
+<script>
+var colored = false;
+var stop = true;
+//the eCircle class takes in a factor for the size of the circle, the name of the canvas, and 
+//starting x and y locs for the cooridinates of the circles.
+var ecircle = ecircle || function (factor, canvas, startX , startY ) {
+	var c = document.getElementById(canvas);
+	this.x=startX;
+	this.y=startY;
+			this.ctx = c.getContext("2d");
+		this.ctx2=c.getContext("2d"); 
+		this.textCanvas=c.getContext("2d");
+		this.innerfakePointx=0;
+		this.innerfakePointy=0;
+		this.innerr=0;
+		this.innery=0;
+		this.innerx=0;
+    this.r=factor*70;
+	this.const = function (factor, xLoc, yLoc) {
+		this.x=xLoc;
+		this.y=yLoc;
+
+	}
+	this.innerCircle = function(sign) {
+	//for a circle, based on the sign passed in
+	//move the inner circle some distance away from the edge
+	//of the circle.  THe left or right edge based on the sign passed in.
+
+	//to move away from the right edge,
+	//take the actual X position (which is the upper right x portion of the vector)
+	//then add 2 * the radius of the outer circle to locate the X position for distance away.
+	//rightEdge = this.x + this.r*2;
+
+	//now to locate the x for the inner circle we start with the value that would have it touching the edge
+	//rightEdge - this.innerr*2 
+	//then subtract the width from that to move it away from the edge.
+	//rightEdge - this.innerr*2 - distanceFromEdge
+	//this subtract the inner radius one mroe time.
+	//for the leftEdge it is easier.  Just add the width to the innerr.
+
+	var distanceFromEdge=35;
+	this.innerr=this.r*(5/8);
+	//You need to account for the width of the line for hte circle (the - 10 here)
+	var rightEdge = this.x + distanceFromEdge;
+	var leftEdge = this.x + this.r*2 - this.innerr*2 - distanceFromEdge;
+	this.textMove = 0;
+	this.innery=this.y + (this.r - this.innerr);
+	if (sign == '+'){
+		this.innerx=rightEdge+25;
+		this.textMove = this.textMove*-1;
+		this.sign=5;
+	} else if (sign == '-') {
+		this.innerx=leftEdge-25;
+		this.sign = -5;
+		}
+	this.setFakePoints();
+
+	}
+
+	this.setFakePoints = function() {
+		this.fakePointx = this.x + this.r;
+		this.fakePointy = this.y + this.r;
+		this.innerfakePointx = this.innerx + this.innerr;
+		this.innerfakePointy = this.innery + this.innerr;
+	}
+
+	this.draw = function(color,opacswap) {
+	   
+		this.ctx2.strokeStyle="#000000";
+		this.ctx.lineWidth=40;
+		this.ctx.beginPath();
+		this.ctx.arc(this.fakePointx,this.fakePointy,this.r,0,2*Math.PI);
+
+		this.ctx.stroke();
+		this.ctx.closePath();
+
+		this.ctx2.lineWidth=40;
+		this.ctx2.beginPath();
+		this.ctx2.arc(this.innerfakePointx,this.innerfakePointy,this.innerr,0,2*Math.PI);
+		if (colored == true)
+		{
+			this.ctx2.fillStyle = color;
+			this.ctx2.fill();
+		}
+		var message = "Clear";
+		this.ctx2.stroke();
+		this.ctx2.closePath();
+		if ( opacswap === 1 )
+		{
+			this.opac = document.getElementById('trans').value.toString();
+		} else {
+			this.opac = 1;
+		}
+		console.log(opacswap);
+		console.log(this.opac);
+		this.ctx2.fillStyle = "rgba(0, 0, 0, "+this.opac.toString()+")";
+		this.textCanvas.font = "30px Arial";
+		
+		var fontSize = this.textCanvas.measureText(message);
+		var fontx = (this.innerr*2 - fontSize.width)/2+this.innerx;
+	//	this.textCanvas.fillText(message,fontx+this.textMove+this.sign*-6,this.innery+5+this.innerr-65)
+	//	this.textCanvas.fillText(message,fontx+this.textMove+this.sign*-3,this.innery+5+this.innerr-35)
+		this.textCanvas.fillText(message,fontx+this.textMove,this.innery+5+this.innerr);
+	//	this.textCanvas.fillText(message,fontx+this.textMove+this.sign*3,this.innery+5+this.innerr+35)
+	//	this.textCanvas.fillText(message,fontx+this.textMove+this.sign*6,this.innery+5+this.innerr+65)
+	//	this.textCanvas.closePath();
+	
+		this.textCanvas.lineWidth=1;
+		this.textCanvas.beginPath();
+		this.textCanvas.fillStyle = 'white';
+		//this.textCanvas.arc(this.innerfakePointx,this.innerfakePointy,40,0,2*Math.PI);
+		this.textCanvas.fill();
+		this.textCanvas.stroke();
+		this.textCanvas.closePath();
+		if (this.innerfakePointx > 600) 
+		{
+		/*
+			this.ctx.beginPath();
+			this.textCanvas.lineWidth=5;
+			this.ctx.moveTo(this.textMove+fontx,this.innery+5+this.innerr+6);
+			this.ctx.lineTo(this.textMove+40+fontx,this.innery+5+this.innerr+6);
+			this.ctx.stroke();
+			this.ctx.moveTo(this.textMove+70+fontx,this.innery+5+this.innerr+6);
+			this.ctx.lineTo(this.textMove+160+fontx,this.innery+5+this.innerr+6);
+			this.ctx.stroke();
+			*/
+		} 
+		else
+		{
+		this.ctx.beginPath();
+			/*
+			this.textCanvas.lineWidth=5;
+			this.ctx.moveTo(this.textMove+fontx,this.innery+5+this.innerr+6);
+			this.ctx.lineTo(this.textMove+90+fontx,this.innery+5+this.innerr+6);
+			this.ctx.stroke();
+			this.ctx.moveTo(130+this.textMove+fontx,this.innery+5+this.innerr+6);
+			this.ctx.lineTo(this.textMove+160+fontx,this.innery+5+this.innerr+6);
+			this.ctx.stroke();
+			*/
+		}
+	}
+	this.clear = function() {
+		this.ctx.clearRect(0, 0, 1600, 1000);
+	}
+		this.const(factor, startX, startY);
+}
+
+	var l = document.getElementById("right");
+	var r = document.getElementById("left");
+var opacval = 1;
+var delay = 200;
+var MaxWidth = 700;
+var shift = 270;
+var width = 550;
+var leftLoc = shift+10;
+var rightLoc = shift+width;
+
+var updownShift = 1;
+var yWidth = 0;
+var baseY = 20;
+var leftYLocB = baseY;
+var rightYLoc = baseY;
+var 	shifter = 1;
+var 	dir = -1;
+
+
+var leftCircle = new ecircle(3, "myCanvas", rightLoc, leftYLocB);
+var rightCircle  = new ecircle(3, "myCanvas", leftLoc , rightYLoc);
+var leftSign = '+';
+var rightSign = '-';
+leftCircle.innerCircle(leftSign);
+
+rightCircle.innerCircle(rightSign);
+
+leftCircle.clear();
+rightCircle.clear();
+rightCircle.draw("green", 1);
+leftCircle.draw("orange", -1	);
+
+function stopIt() 
+{
+	stop = !(stop);
+}
+function swap()
+{
+console.log("swapping right with left");
+var swap;
+swap = leftSign;
+leftSign = rightSign;
+rightSign = swap;
+
+	leftCircle.const(3, leftLoc, leftYLocB);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc, leftYLocB);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+		
+	rightCircle.draw(l.options[l.selectedIndex].value, 1);
+	leftCircle.draw(r.options[r.selectedIndex].value, -1);
+
+}
+
+var colorIt = function() {
+	colored = !(colored);
+	leftCircle.const(3, leftLoc, leftYLocB);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc, leftYLocB);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+		
+	rightCircle.draw(l.options[l.selectedIndex].value, 1);
+	leftCircle.draw(r.options[r.selectedIndex].value, 1);
+}
+
+var colorItOnce = function() {
+	
+	leftCircle.const(3, leftLoc, leftYLocB);
+	leftCircle.innerCircle(rightSign);
+	rightCircle.const(3, rightLoc, leftYLocB);
+	rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+		
+	rightCircle.draw(l.options[l.selectedIndex].value, 1);
+	leftCircle.draw(r.options[r.selectedIndex].value, -1);
+
+}
+
+
+function myMove() {
+setTimeout(myMove, delay);
+	if (typeof document.getElementById('delay').value !== 'undefined')
+		if (document.getElementById('delay').value >= 20)
+			delay = document.getElementById('delay').value;
+		else if(document.getElementById('delay').value < 20)
+			delay = 10;
+		else if(document.getElementById('delay').value >=1000)
+			delay = 1000;
+		else
+			delay = 200;
+	if (typeof document.getElementById('width').value !== 'undefined')
+		if (document.getElementById('width').value >= 500)
+			MaxWidth = document.getElementById('width').value;
+		else
+			MaxWidth = 600;	
+	if (typeof document.getElementById('height').value !== 'undefined')
+		if (document.getElementById('height').value <= 38 && document.getElementById('height').value >=0)
+			yWidth = document.getElementById('height').value;
+		else
+			yWidth = 0;	
+
+	
+	if (stop != true)
+	{
+	if (rightLoc-leftLoc < width && shifter > 0)
+		shifter = shifter * dir;
+	else if (rightLoc - leftLoc > MaxWidth && shifter < 0)
+		shifter = shifter * dir;
+	if (yWidth != 0)
+	{
+		if (rightYLoc <=yWidth +baseY && leftYLocB >= baseY + yWidth*2 || leftYLocB <=yWidth +baseY && rightYLoc >= baseY + yWidth*2 )
+		{
+			updownShift = updownShift * -1;
+		}
+	console.log(leftYLocB);
+	    leftYLocB = (leftYLocB - updownShift);
+		rightYLoc = (rightYLoc + updownShift);
+	}
+	else{
+			    leftYLocB = baseY;
+		rightYLoc = baseY;
+	}
+
+
+	leftLoc = leftLoc + shifter;
+	rightLoc = rightLoc - shifter;
+	
+	//leftCircle.const(3, leftLoc, leftYLocB);
+	//leftCircle.innerCircle(rightSign);
+	//rightCircle.const(3, rightLoc, leftYLocB);
+	//rightCircle.innerCircle(leftSign);
+	leftCircle.clear();
+	rightCircle.clear();
+
+
+	opacval = opacval * -1;
+	rightCircle.draw(l.options[l.selectedIndex].value, opacval);
+	leftCircle.draw(r.options[r.selectedIndex].value, -1*opacval);
+	
+
+	}
+  }
+myMove();
+
+
+</script>
+
+</body>
+</html>
