@@ -216,25 +216,94 @@ var anagCircle = anagCircle || function(x, y, r, c, w, contxt, width) {
 
 //Choose correct circle.
 var correct = 0;
-var newGame = function () {
+var theSame = true;  //sentinel to check that "answer" and the rest of the circles are not the same.
+var middleY = 315;
+var minWidth = 40;
+var maxWidth = 100;
+var difference = maxWidth - minWidth;
 
-	TotalDiv.innerHTML = Total;
 
-	currentStreakDiv.innerHTML = currentStreak;
 
+var current_anag = [
+
+	100.0,
+	100.0,
+	100.0,
+	100.0
+
+];
+
+var increments = [
+	100.0,
+	100.0,
+	100.0,
+	100.0
+];
+
+var middle_loc = 100.0;
+
+var animate = function(increments, middle_increment, correct,count) {
+
+	//clear the canvas
 	var clear = document.getElementById("myCanvas").getContext("2d");
 	clear.clearRect(0, 0, 1040, 1000);
 
+	current_anag[0] += increments[0];
+	current_anag[1] = increments[1];
+	current_anag[2] = increments[2];
+	current_anag[3] += increments[3];
+	middle_loc += middle_increment;
+	
+	if (count >= 41) {
+		middle_loc = current_anag[correct];
+	}
+	
+	//Draw must be called after creation of the object or bugs will occur;
+	var top = new anagCircle(530, 110, 90, "ffA100", 10, "myCanvas", current_anag[0]); 
+	top.draw();
+	
+	var bottom = new anagCircle(530, 520, 90, "ffA100", 10, "myCanvas", current_anag[3]);
+	bottom.draw();
+	
+
+	
+	//take width from "middle" which will be the widht of the "correct" circle and use base of 530 as the beginning 
+	//for the "x" cooridante you need for the left and right sides.
+	var distanceFromCenter = (90 + current_anag[correct]/2);
+	var rightLengthOfLeft = (105 + current_anag[1]/2);
+	var leftLengthOfRight = (105 + current_anag[2]/2);
+	var left = new anagCircle(530 - distanceFromCenter - rightLengthOfLeft, middleY, 90, "ffA100", 10, "myCanvas", current_anag[1]); 
+	left.draw(); 
+	var right = new anagCircle(530 + distanceFromCenter + leftLengthOfRight, middleY, 90, "ffA100", 10, "myCanvas", current_anag[2]);
+	right.draw(); 
+	
+	var middle = new anagCircle(530, middleY, 90, "ffA100", 10, "myCanvas", middle_loc);
+	middle.draw();
+	
+	//genuine center is 400.  Thus I must calculate an "X" to give the middle circle
+	//such that the whole thing will appear to be in the center.
+	//No fuck that, I'm going to have the anaglyph function take the true "center" and then
+	//do math to identify the proper x for that center.
+	if (count < 41) {
+		console.log(count);
+		var a = setTimeout(function(){animate(increments, middle_increment, correct,count+1)}, 50);
+	} 
+	
+
+}
+
+
+var newGame = function () {
+
+	TotalDiv.innerHTML = Total;
+	currentStreakDiv.innerHTML = currentStreak;
+	
+	//Choose the circle to "match" to the center
 	var T = new Date().getSeconds();
 	correct = T % 4;
 
-	var theSame = true;  //sentinel to check that "answer" and the rest of the circles are not the same.
-	var minWidth = 40;
-	var maxWidth = 160;
-	var difference = maxWidth - minWidth;
 
 	var widthArray = new Array();
-
 	for (var i = 0; i < 4; i++)
 	{
 		widthArray.push(Math.ceil(difference*Math.random() + 40));
@@ -246,6 +315,8 @@ var newGame = function () {
 
 	while(i < 4)
 	{
+		//THis ensures that no non-winning circle is too similar to the winning circle so that only the winning 
+		//circle can possibly have the same values as the center circle.
 		if ( Math.abs(widthArray[correct] - widthArray[i]) <= 20 && i != correct)
 		{
 			widthArray[i] = Math.ceil(difference*Math.random()) + 40;
@@ -254,41 +325,17 @@ var newGame = function () {
 			i++;
 		}
 	}
-
-	var middleY = 315;
-	var top = new anagCircle(530, 110, 90, "ffA100", 10, "myCanvas", widthArray[0]); 
-
-	top.draw();
-	var bottom = new anagCircle(530, 520, 90, "ffA100", 10, "myCanvas", widthArray[3]);
-
-	bottom.draw();
-	var middle = new anagCircle(530, middleY, 90, "ffA100", 10, "myCanvas", widthArray[correct]);
-
-	middle.draw();
-
-	//take width from "middle" which will be the widht of the "correct" circle and use base of 530 as the beginning 
-	//for the "x" cooridante you need for the left and right sides.
-
-	var distanceFromCenter = (90 + widthArray[correct]/2);
-	var rightLengthOfLeft = (105 + widthArray[1]/2);
-	var leftLengthOfRight = (105 + widthArray[2]/2);
-	var left = new anagCircle(530 - distanceFromCenter - rightLengthOfLeft, middleY, 90, "ffA100", 10, "myCanvas", widthArray[1]); 
-
-	left.draw();
-	var right = new anagCircle(530 + distanceFromCenter + leftLengthOfRight, middleY, 90, "ffA100", 10, "myCanvas", widthArray[2]); 
-
-	right.draw();
-		
-
-
-	//genuine center is 400.  Thus I must calculate an "X" to give the middle circle
-	//such that the whole thing will appear to be in the center.
-	//No fuck that, I'm going to have the anaglyph function take the true "center" and then
-	//do math to identify the proper x for that center.
-
-
-
-
+	new_anag = widthArray;
+	frames = 40;
+	increments = [
+		(new_anag[0] - current_anag[0])/frames,
+		new_anag[1],
+		new_anag[2],
+		(new_anag[3] - current_anag[3])/frames
+	]
+	
+	middle_increment = (new_anag[correct] - middle_loc) / frames;
+	animate(increments, middle_increment, correct, 1);
 }
 
  newGame();
